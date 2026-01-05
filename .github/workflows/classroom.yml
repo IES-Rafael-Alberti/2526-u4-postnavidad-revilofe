@@ -1,33 +1,29 @@
-name: Prueba de Autograding
-
-on: [push, workflow_dispatch]
-
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
 permissions:
-  checks: write   # CRUCIAL: Necesario para escribir la nota
+  checks: write
   actions: read
   contents: read
-
 jobs:
-  probar-nota:
+  run-autograding-tests:
     runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
     steps:
-      - uses: actions/checkout@v4
-
-      # 1. Simulamos tu script de tests
-      - name: Simular Script de Tests
-        id: calculo
-        run: |
-          # Generamos una nota aleatoria entre 50 y 100
-          NOTA_RANDOM=$(( ( RANDOM % 51 ) + 50 ))
-          echo "Simulando ejecución de tests..."
-          echo "Nota calculada: $NOTA_RANDOM"
-          
-          # Guardamos la nota en el output para el siguiente paso
-          echo "puntos=$NOTA_RANDOM" >> $GITHUB_OUTPUT
-
-      # 2. Ejecutamos la acción de Mark Patterson
-      - name: Reportar Nota a GitHub
-        uses: markpatterson27/autograding@dev-points-input-release
-        with:
-          points: ${{ steps.calculo.outputs.puntos }}
-          available-points: 100
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: dummy
+      id: dummy
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: dummy
+        setup-command: ''
+        command: gradle test
+        timeout: 10
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        DUMMY_RESULTS: "${{steps.dummy.outputs.result}}"
+      with:
+        runners: dummy
