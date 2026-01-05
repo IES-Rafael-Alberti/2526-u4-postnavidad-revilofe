@@ -19,7 +19,7 @@ jobs:
         id: calculo
         run: |
           # Generamos una nota aleatoria entre 50 y 100
-          NOTA_RANDOM=$(( ( RANDOM % 51 ) + 50 ))
+          NOTA_RANDOM=$(( ( RANDOM % 6 ) + 4 ))
           echo "Simulando ejecución de tests..."
           echo "Nota calculada: $NOTA_RANDOM"
           
